@@ -40,8 +40,11 @@ export default class SearchScreen extends React.Component {
     };
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.setState({ loading: true });
+  }
+  componentWillUnmount() {
+    this.setState({ loading: false });
   }
   
   renderLoading() {

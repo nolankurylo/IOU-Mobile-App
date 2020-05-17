@@ -33,10 +33,13 @@ export default class CreateHouseNameScreen extends React.Component {
     loading: false,
   };
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     var user = await AsyncStorage.getItem("user")
     this.setState({ user: user, loading: false });
   };
+  componentWillUnmount(){
+    this.setState({ loading: false });
+  }
     
   renderLoading() {
     if (this.state.loading) {

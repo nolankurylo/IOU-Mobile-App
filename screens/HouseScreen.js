@@ -8,7 +8,8 @@ import {
   RefreshControl,
   FlatList,
   Modal,
-  AsyncStorage
+  AsyncStorage,
+  SafeAreaView
 } from "react-native";
 import { API_ROUTE } from "react-native-dotenv";
 import {
@@ -84,7 +85,7 @@ export default class HouseScreen extends React.Component {
         this.getHouse()
     }
   }
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.setState({ loading: true });
     const { navigation } = this.props
     navigation.setParams({
@@ -103,7 +104,7 @@ export default class HouseScreen extends React.Component {
 
   render() {
     return ( 
-      <View style={{flex:1}}>
+      <SafeAreaView style={{flex:1}}>
         <Modal
           animationType="slide"
           transparent={false}
@@ -135,29 +136,25 @@ export default class HouseScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <ScrollView style={{ flexGrow: 1 }} refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-        }>
-          <Card title="Living In Your House">
             <FlatList
+              refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />}
+        
               data={this.state.house}
               renderItem={({ item }) => <TouchableOpacity onPress={() => this.props.navigation.navigate("IOUHistory", { user: this.state.user, other_user: item, house_id: this.state.house_id })} ><ListItem
               style={styles.listItem}
-              title={<HouseList numItems={item.items} amount={item.amount}/>}
-              leftElement={<View style={{flexDirection: 'row', flexWrap: 'wrap'}}><CustomizedIcon name="md-person" color="#3498db"/><Text style={styles.left}>{item.name}</Text></View>}
-              rightElement={<CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>}
+              title={<Text style={styles.left}>{item.name}</Text>}
+              leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+              rightElement={<HouseList numItems={item.items} amount={item.amount}/>}
               /></TouchableOpacity>}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={this.renderSeparator}
-              centerContent
             />
-          </Card>
-        </ScrollView>
         {this.renderLoading()}
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -207,7 +204,7 @@ export default class HouseScreen extends React.Component {
 
   renderLoading() {
     if (this.state.loading) {
-      return <Loader loading={this.state.loading} color={"#000000"} /> 
+      return <Loader loading={this.state.loading} /> 
     } else {
       return null
     }
@@ -271,6 +268,5 @@ const styles = StyleSheet.create({
     marginLeft:10, 
     marginTop: 4, 
     fontSize: 18,
-    width: 100
   }
 });

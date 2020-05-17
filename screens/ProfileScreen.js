@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  SafeAreaView
 } from "react-native";
 import TabBarIcon from "../components/TabBarIcon";
 import { API_ROUTE } from "react-native-dotenv";
@@ -16,6 +17,7 @@ import {
 import { AsyncStorage } from "react-native";
 import Loader from "../components/Loader"
 import CustomizedIcon from "../components/CustomizedIcon"
+import { showMessage } from "react-native-flash-message";
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -48,8 +50,11 @@ export default class ProfileScreen extends React.Component {
     };
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.setState({ loading: true  });
+  }
+  componentWillUnmount() {
+    this.setState({ loading: false });
   }
   
   getFriends = () => {
@@ -125,6 +130,11 @@ export default class ProfileScreen extends React.Component {
     await AsyncStorage.clear();
     this.setState({ loading: false  });
     this.props.navigation.navigate("AuthLoading");
+    showMessage({
+      message: "Logged out successfully!",
+      type: "default",
+      backgroundColor: "#01c853",
+    });
   };
 
   renderSeparator = () => {
@@ -170,36 +180,37 @@ export default class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView contentInset={{top:0, bottom: 100}}>
-          {this.renderNotifications()}
-          <Card title={`Logged in as: ${this.state.username}`}>
-            <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
-              <Text>Email:</Text>
-              <Text>Friends:</Text>
-            </View>
-            <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
-              <Text>{this.state.email}</Text>
-              <Text>({this.state.numFriends})</Text>
-            </View>
-          </Card>
-          <Card title="Your Friends:">
-          <FlatList
-            data={this.state.friends}
-            renderItem={({ item }) => <ListItem
-            style={styles.user}
-            title={item.name}
-            leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
-            rightElement={
-              <TouchableOpacity onPress={() => this.removeFriend(item.id)}>
-                <CustomizedIcon name="ios-trash" color="red"/>
-              </TouchableOpacity>
-            }
-          />}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={this.renderSeparator}
-          />
-          </Card>          
-        </ScrollView>
+          <SafeAreaView style={{flex: 1}}>
+            {this.renderNotifications()}
+            <Card title={`Logged in as: ${this.state.username}`}>
+              <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                <Text>Email:</Text>
+                <Text>Friends:</Text>
+              </View>
+              <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                <Text>{this.state.email}</Text>
+                <Text>({this.state.numFriends})</Text>
+              </View>
+            </Card>
+            <Card title="Your Friends:">
+            <FlatList
+              contentInset={{top:0, bottom: 100}}
+              data={this.state.friends}
+              renderItem={({ item }) => <ListItem
+              style={styles.user}
+              title={item.name}
+              leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+              rightElement={
+                <TouchableOpacity onPress={() => this.removeFriend(item.id)}>
+                  <CustomizedIcon name="ios-trash" color="red"/>
+                </TouchableOpacity>
+              }
+            />}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={this.renderSeparator}
+            />
+            </Card>
+          </SafeAreaView>          
         <TouchableOpacity style={styles.logoutBtn} onPress={() => this.logout()}><Text style={{color:"#FFFFFF", fontWeight: 'bold', fontSize: 22, textAlign: 'center'}}>Logout</Text></TouchableOpacity>
         {this.renderLoading()}
       </View>

@@ -4,12 +4,16 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
   View,
-  AsyncStorage
+  AsyncStorage,
+  ScrollView,
+  SafeAreaView
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 import { API_ROUTE } from "react-native-dotenv";
 import Loader from "../components/Loader"
+import { showMessage } from "react-native-flash-message";
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
@@ -20,9 +24,18 @@ export default class LoginScreen extends React.Component {
       loading: false
     };
   }
+  static navigationOptions = ({navigation}) => {
+    return {
+      header: null
+    }
+  };
 
   componentDidMount() {
     this._loadInitialState().done();
+  }
+
+  componentWillUnmount(){
+    this.state.loading = false;
   }
   _loadInitialState = async () => {
     var value = await AsyncStorage.getItem("user");
@@ -40,35 +53,51 @@ export default class LoginScreen extends React.Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView extraScrollHeight={120} style={styles.wrapper}>
         <View style={styles.container}>
-          <Text style={styles.header}>- LOGIN -</Text>
-          <TextInput
-            maxHeight={100}
-            maxLength={80}
-            placeholder="Enter your username or email"
-            style={styles.textInput}
-            onChangeText={username => this.setState({ username })}
-          />
-          <TextInput
-            maxHeight={100}
-            maxLength={128}
-            secureTextEntry
-            placeholder="Enter your password"
-            style={styles.textInput}
-            onChangeText={password => this.setState({ password })}
-          />
-          <TouchableOpacity style={styles.btn} onPress={() => this.login()}>
-            <Text>LOGIN</Text>
-            {this.renderLoading()}
-          </TouchableOpacity>
-         
+          <KeyboardAvoidingView behavior='padding' style={{flex: 1}} >
+            <ScrollView contentContainerStyle={{flexGrow:1, justifyContent: "center", alignContent: "center"}} contentInset={{top:0, bottom: 100}}>
+              <SafeAreaView style={styles.wrapper}>
+                <View style={styles.contentWrapper}>
+                  <Text style={styles.header}>- UOME LOGIN -</Text>
+                  <TextInput
+                    maxHeight={100}
+                    maxLength={80}
+                    placeholder="Enter your username or email"
+                    style={styles.textInput}
+                    onChangeText={username => this.setState({ username })}
+                  />
+                  <TextInput
+                    maxHeight={100}
+                    maxLength={128}
+                    secureTextEntry
+                    placeholder="Enter your password"
+                    style={styles.textInput}
+                    onChangeText={password => this.setState({ password })}
+                  />
+                  <TouchableOpacity style={styles.btn} onPress={() => this.login()}>
+                    <Text style={{color: 'white', fontWeight: 'bold'}}>LOGIN</Text>
+                    {this.renderLoading()}
+                  </TouchableOpacity>
+                </View>
+              </SafeAreaView>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </View>
-      </KeyboardAwareScrollView>
+      
     );
   }
 
   login = () => {
+    if (
+      this.state.password === "" ||
+      this.state.username === ""
+    ) {
+      showMessage({
+        message: "One or more fields are empty",
+        type: "danger"
+      });
+      return
+    }
     this.setState({ loading: true  });
     // Request API to log current user in
     url = API_ROUTE + "/login";
@@ -86,10 +115,22 @@ export default class LoginScreen extends React.Component {
         if (res.auth === true) {
           AsyncStorage.setItem("user", JSON.stringify(res.user));
           this.props.navigation.navigate("Auth");
+          showMessage({
+            message: "Logged in successfully!",
+            type: "default",
+            backgroundColor: "#01c853",
+          });
+          
         } else if (res.auth === false) {
-          alert(res.message);
+          showMessage({
+            message: res.message,
+            type: "danger"
+          });
         } else {
-          alert(res.error);
+          showMessage({
+            message: res.error,
+            type: "danger"
+          });
         }
       })
       .catch(error => {
@@ -100,22 +141,24 @@ export default class LoginScreen extends React.Component {
 }
 const styles = StyleSheet.create({
   wrapper: {
-    padding: 20,
-    flex: 1,
-    backgroundColor: "#2896d3"
+    alignItems: "stretch"  
   },
-  container: {
+  contentWrapper: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    bottom: -100
+    padding: 30
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#3498db",
   },
   textInput: {
     alignSelf: "stretch",
     padding: 16,
     marginBottom: 20,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    borderRadius: 2
   },
   header: {
     fontSize: 24,
@@ -127,6 +170,8 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: "#01c853",
     padding: 20,
-    alignItems: "center"
+    alignItems: "center",
+    borderRadius: 50,
+    marginTop: 50
   }
 });

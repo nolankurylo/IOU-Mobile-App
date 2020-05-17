@@ -4,6 +4,7 @@ import { AppLoading } from "expo";
 import * as Font from "expo-font"
 import { Asset } from "expo-asset"
 import AppNavigator from "./navigation/AppNavigator";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 import Hello from "./navigation/AppNavigator";
 
 export default class App extends React.Component {
@@ -26,6 +27,7 @@ export default class App extends React.Component {
         <View style={styles.container}>
           {Platform.OS === "ios" && <StatusBar barStyle="default" />}
           <AppNavigator />
+          <FlashMessage floating={true} position="top" style={{alignItems: "center"}} textStyle={{fontWeight: 'bold'}} />
         </View>
       );
     }

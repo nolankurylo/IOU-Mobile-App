@@ -10,6 +10,7 @@ import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import TabBarIcon from "../components/TabBarIcon";
 
+
 // Login / Register Navigation Stack Navigator
 
 
@@ -17,8 +18,10 @@ import TabBarIcon from "../components/TabBarIcon";
 const LoginStack = createStackNavigator({
   Login: LoginScreen
 });
-
 LoginStack.navigationOptions = {
+  headerStyle: {
+    backgroundColor: 'red'
+  }, 
   tabBarLabel: "Login",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -29,7 +32,8 @@ LoginStack.navigationOptions = {
           : "md-information-circle"
       }
     />
-  )
+  ),
+  
 };
 
 const RegisterStack = createStackNavigator({

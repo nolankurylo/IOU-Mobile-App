@@ -7,7 +7,8 @@ import {
   AsyncStorage,
   View,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  SafeAreaView
 } from "react-native";
 import TabBarIcon from "../components/TabBarIcon";
 import CustomizedIcon from "../components/CustomizedIcon"
@@ -45,15 +46,15 @@ export default class HomeScreen extends React.Component {
     };
   }
   
-  componentWillMount = () => {
-    this.setState({ loading: true  });
-  }
-
   componentDidMount = () => {
+    this.setState({ loading: true  });
     const { navigation } = this.props
     navigation.setParams({
         createHouse: this.createHouse,
     })
+  }
+  componentWillUnmount(){
+    this.setState({ loading: false });
   }
 
   _onRefresh = () => {
@@ -111,19 +112,19 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         {this.renderTitle()}
-        <ScrollView
-        contentContainerStyle={{flexGrow:1}}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-        }>
+      <SafeAreaView style={{flex: 1}}>
         
           <View style={styles.subContainer}>
           {this.renderButton()}
           <FlatList
             extraData={this.state}
+            contentInset={{top:0, bottom: 100}}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh}
+              />
+            }
             data={this.state.houses}
             renderItem={({ item }) => 
               <ListItem
@@ -144,10 +145,10 @@ export default class HomeScreen extends React.Component {
                 chevron
               />}
             keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={this.renderSeparator}
+            
           />
           </View>
-        </ScrollView>
+      </SafeAreaView>
         {this.renderLoading()}
       </View>
     );
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6C6C6C"
   },
   subContainer: {
-    flexGrow: 1,
+    flex: 1,
     borderRadius: 20,
     backgroundColor: "#3498db",
     borderColor: "transparent"
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
     paddingTop: 50
   },
   listItem: {
-    flex: 1,
+   
     margin: 20,
     borderWidth: 1,
     borderColor: "transparent",

@@ -40,12 +40,15 @@ export default class AddHouseFriendsScreen extends React.Component {
     refreshing: false
   };
   
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.state.user = this.props.navigation.getParam('user');
     this.state.name = this.props.navigation.getParam('name');
     this.setState({ loading: true });
     this.getFriends();
   };
+  componentWillUnmount() {
+    this.setState({ loading: false });
+  }
 
   _onRefresh = () => {
     this.setState({ refreshing: true });
@@ -121,7 +124,7 @@ export default class AddHouseFriendsScreen extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={{flex:1}}>
+      <View style={{flex: 1}}>
       <SearchBar
           value={this.state.search}
           onChangeText={text => this.filterList(text)}
@@ -129,14 +132,18 @@ export default class AddHouseFriendsScreen extends React.Component {
           lightTheme
           round
         />
-        <ScrollView contentInset={{ top: 0, bottom: 100 }} refreshControl={
+        <SafeAreaView style={{flex:1, }}>
+        <View style={{alignItems: 'center', backgroundColor: "#9B9B9B", borderBottomColor: '#292929', borderBottomWidth: 1}}>
+          <Text style={styles.header}>Select the friends you wish to include in your group below:</Text> 
+        </View>
+        
+        <FlatList
+          contentInset={{ top: 0, bottom: 100 }} refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
             onRefresh={this._onRefresh}
           />
-        }>
-        <Card title="Add friends">
-        <FlatList
+        }
           extraData={this.state}
           data={this.state.all_users}
           renderItem={({ item, index }) => <ListItem
@@ -158,10 +165,8 @@ export default class AddHouseFriendsScreen extends React.Component {
             />}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={this.renderSeparator}
-        />
-        
-        </Card>
-        </ScrollView>
+        />        
+        </SafeAreaView>
         <TouchableOpacity
         style={styles.btn}
         onPress={() => this.checkForm()}>
@@ -169,7 +174,7 @@ export default class AddHouseFriendsScreen extends React.Component {
         </TouchableOpacity>
         
         {this.renderLoading()}
-        </SafeAreaView>
+        </View>
     );
   }
 
@@ -260,5 +265,13 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "stretch",
     borderRadius: 8
+  },
+  header: {
+    fontSize: 18,
+    color: 'white',
+    alignItems: 'center',
+    marginVertical: 60,
+    marginHorizontal: 20,
+    fontWeight: "bold"
   },
 });

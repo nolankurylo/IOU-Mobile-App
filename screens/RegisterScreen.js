@@ -4,11 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
   View,
-  AsyncStorage
+  AsyncStorage,
+  ScrollView,
+  SafeAreaView
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import { API_ROUTE } from "react-native-dotenv";
 import Loader from "../components/Loader"
 
@@ -26,9 +28,19 @@ export default class RegisterScreen extends React.Component {
     };
   }
 
+  static navigationOptions = ({navigation}) => {
+    return {
+      header: null
+    }
+  };
+
   componentDidMount() {
     this._loadInitialState().done();
   }
+  componentWillUnmount() {
+    this.state.loading = false;
+  }
+
   _loadInitialState = async () => {
     var value = await AsyncStorage.getItem("user");
     if (value !== null) {
@@ -45,90 +57,69 @@ export default class RegisterScreen extends React.Component {
   }
   render() {
     return (
-      <KeyboardAwareScrollView extraScrollHeight={50} style={styles.wrapper}>
-        <View style={styles.container}>
-          <Text style={styles.header}>- REGISTER -</Text>
+      <View style={styles.container}>
+        <KeyboardAvoidingView behavior='padding' style={{flex: 1}} >
+          <ScrollView contentContainerStyle={{flexGrow:1, justifyContent: "center", alignContent: "center"}} contentInset={{top:0, bottom: 100}}>
+            <SafeAreaView style={styles.wrapper}>
+              <View style={styles.contentWrapper}>
+                <Text style={styles.header}>- UOME REGISTRATION -</Text>
+                <TextInput
+                  maxHeight={100}
+                  maxLength={80}
+                  blurOnSubmit={true}
+                  placeholder="Enter your username"
+                  onChangeText={username => this.setState({ username })}
+                  onChange={this.usernameCheck}
+                  style={
+                    this.state.usernameValidator
+                      ? styles.textInput
+                      : styles.textInputError
+                  }
+                />
+                <TextInput
+                  maxLength={80}
+                  maxHeight={100}
+                  placeholder="Enter your email"
+                  onChangeText={email => this.setState({ email })}
+                  onChange={this.emailCheck}
+                  style={
+                    this.state.emailValidator
+                      ? styles.textInput
+                      : styles.textInputError
+                  }
+                />
+                <TextInput
+                  maxLength={128}
+                  maxHeight={100}
+                  secureTextEntry
+                  placeholder="Enter your password"
+                  onChangeText={password => this.setState({ password })}
+                  onChange={this.passwordCheck}
+                  style={
+                    this.state.passwordValidator
+                      ? styles.textInput
+                      : styles.textInputError
+                  }
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="Repeat your password"
+                  style={styles.textInput}
+                  onChangeText={repeatPassword => this.setState({ repeatPassword })}
+                />
 
-          <TextInput
-            maxHeight={100}
-            maxLength={80}
-            blurOnSubmit={true}
-            placeholder="Enter your username"
-            onChangeText={username => this.setState({ username })}
-            onChange={this.usernameCheck}
-            style={
-              this.state.usernameValidator
-                ? styles.textInput
-                : styles.textInputError
-            }
-          />
-          <TextInput
-            maxLength={80}
-            maxHeight={100}
-            placeholder="Enter your email"
-            onChangeText={email => this.setState({ email })}
-            onChange={this.emailCheck}
-            style={
-              this.state.emailValidator
-                ? styles.textInput
-                : styles.textInputError
-            }
-          />
-          <TextInput
-            maxLength={128}
-            maxHeight={100}
-            secureTextEntry
-            placeholder="Enter your password"
-            onChangeText={password => this.setState({ password })}
-            onChange={this.passwordCheck}
-            style={
-              this.state.passwordValidator
-                ? styles.textInput
-                : styles.textInputError
-            }
-          />
-          <TextInput
-            secureTextEntry
-            placeholder="Repeat your password"
-            style={styles.textInput}
-            onChangeText={repeatPassword => this.setState({ repeatPassword })}
-          />
-
-          <TouchableOpacity style={styles.btn} onPress={() => this.register()}>
-            <Text>REGISTER</Text>
-            {this.renderLoading()}
-          </TouchableOpacity>
-        </View>
-        <FlashMessage floating={true} position="center" />
-        
-      </KeyboardAwareScrollView>
+                <TouchableOpacity style={styles.btn} onPress={() => this.register()}>
+                  <Text style={{color: 'white', fontWeight: 'bold'}}>REGISTER</Text>
+                  {this.renderLoading()}
+                </TouchableOpacity>
+              </View>
+          </SafeAreaView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
     );
   }
-  // The following 3 functions validate the registration textInput provided by the user
-  usernameCheck = () => {
-    if (this.state.username.length < 2) {
-      return this.setState({ usernameValidator: false });
-    } else {
-      return this.setState({ usernameValidator: true });
-    }
-  };
-
-  emailCheck = () => {
-    var re = /\S+@\S+\.\S+/;
-    if (!re.test(this.state.email)) {
-      return this.setState({ emailValidator: false });
-    } else {
-      return this.setState({ emailValidator: true });
-    }
-  };
-
-  passwordCheck = () => {
-    if (this.state.password.length < 5) {
-      return this.setState({ passwordValidator: false });
-    } else {
-      return this.setState({ passwordValidator: true });
-    }
-  };
+  
 
   register = () => {
     // Validate that the textInput fields were entered properly
@@ -138,15 +129,17 @@ export default class RegisterScreen extends React.Component {
       this.state.username === "" ||
       this.state.email === ""
     ) {
-      showMessage({
-        message: "One or more fields are empty",
-        type: "danger"
-      });
-      return this.setState({
+      this.setState({
         passwordValidator: false,
         emailValidator: false,
         usernameValidator: false
       });
+      
+       showMessage({
+        message: "One or more fields are empty",
+        type: "danger"
+      });
+      return
     }
     if (this.state.password !== this.state.repeatPassword) {
       showMessage({
@@ -179,8 +172,16 @@ export default class RegisterScreen extends React.Component {
             // Create user token, login user, redirect to Main Tab Bar stack navigator
             AsyncStorage.setItem("user", JSON.stringify(res.user));
             this.props.navigation.navigate("Auth");
+            showMessage({
+              message: "Registered successfully!",
+              type: "default",
+              backgroundColor: "#01c853",
+            });
           } else {
-            alert(res.error);
+            showMessage({
+              message: res.error,
+              type: "danger"
+            });
           }
         })
         .catch(error => {
@@ -194,18 +195,45 @@ export default class RegisterScreen extends React.Component {
       });
     }
   };
+  // The following 3 functions validate the registration textInput provided by the user
+  usernameCheck = () => {
+    if (this.state.username.length < 2) {
+      return this.setState({ usernameValidator: false });
+    } else {
+      return this.setState({ usernameValidator: true });
+    }
+  };
+
+  emailCheck = () => {
+    var re = /\S+@\S+\.\S+/;
+    if (!re.test(this.state.email)) {
+      return this.setState({ emailValidator: false });
+    } else {
+      return this.setState({ emailValidator: true });
+    }
+  };
+
+  passwordCheck = () => {
+    if (this.state.password.length < 5) {
+      return this.setState({ passwordValidator: false });
+    } else {
+      return this.setState({ passwordValidator: true });
+    }
+  };
 }
 const styles = StyleSheet.create({
   wrapper: {
-    flex: 1,
-    backgroundColor: "#2896d3"
+    alignItems: "stretch"
   },
-  container: {
+  contentWrapper: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    bottom: 0
+    padding: 30
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#3498db",
   },
   textInputError: {
     alignSelf: "stretch",
@@ -231,6 +259,8 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: "#01c853",
     padding: 20,
-    alignItems: "center"
+    alignItems: "center",
+    borderRadius: 50,
+    marginTop: 50
   }
 });
