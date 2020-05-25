@@ -16,6 +16,7 @@ import {
 import { API_ROUTE } from "react-native-dotenv";
 import CustomizedIcon from "../components/CustomizedIcon"
 import Loader from "../components/Loader"
+import { showMessage } from "react-native-flash-message";
 
 export default class IOUHistoryScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -72,7 +73,7 @@ export default class IOUHistoryScreen extends React.Component {
     }
   } 
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     this.state.user = this.props.navigation.getParam('user');
     this.state.other_user = this.props.navigation.getParam('other_user');
     this.state.house_id = this.props.navigation.getParam('house_id');
@@ -85,7 +86,7 @@ export default class IOUHistoryScreen extends React.Component {
     if (this.state.total_amount > 0){
       amount = (this.state.total_amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); 
       return (
-        <View style={{ flex: 1, justifyContent: 'center',alignItems: 'center', flexWrap: 'wrap'}}>
+        <View style={{ flex: 1, justifyContent: 'center',alignItems: 'center'}}>
           <TouchableOpacity onPress={() => this.finalizeAllMoneySubmission()} style={styles.btn}>
             <Text style={{flex: 1, color:"#FFF", fontWeight: 'bold', fontSize: 15, textAlign: "center", flexWrap: "wrap"}} >Pay ${amount} To {this.state.other_user.name}</Text>        
           </TouchableOpacity>
@@ -96,7 +97,7 @@ export default class IOUHistoryScreen extends React.Component {
     else if (this.state.total_amount < 0){
       amount = (this.state.total_amount * -1).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); 
       return (
-        <View style={{ flex: 1, justifyContent: 'center',alignItems: 'center'}}>
+        <View style={{ flex: 1, justifyContent: 'center',alignItems: 'center' }}>
           <TouchableOpacity onPress={() => this.finalizeAllMoneySubmission()} style={styles.btn}>
             <Text style={{flex: 1, color:"#FFF", fontWeight: 'bold', fontSize: 15, textAlign:"center", flexWrap: "wrap" }}>Pay Yourself ${amount} Back For {this.state.other_user.name}</Text>        
           </TouchableOpacity>
@@ -169,12 +170,11 @@ export default class IOUHistoryScreen extends React.Component {
 
   render() {
     return (
-      <View style={{flex: 1, backgroundColor:"#3498db"}}>
-        <ScrollView >
+      <View style={{flex: 1, backgroundColor:"#505050"}}>
+        <ScrollView contentInset={{top:0, bottom: 100}} >
           <View style={{marginHorizontal: 5, marginTop: 15}}>
             {this.renderButtons()}
             <Card title={"IOU's between you and " + this.state.other_user.name}>
-            <View style={{flexDirection: "row"}}>
               <FlatList
                 style={{width: "100%"}}
                 ListHeaderComponent={<View style={{borderBottomWidth: 1, borderBottomColor: '#CED0CE', alignItems: "center"}}><Text style={{fontWeight: "bold", color: "#3CB371"}}>MONEY</Text><View style={{marginBottom: 10}}>
@@ -192,7 +192,8 @@ export default class IOUHistoryScreen extends React.Component {
                 titleStyle={{width: 230, fontSize: 13}}
                 />}
               />
-              <View style={{ borderLeftWidth: 1, height: '100%', borderLeftColor: '#CED0CE' }}/>
+              </Card>
+              <Card title={"IOU's between you and " + this.state.other_user.name}>
               <FlatList
                 style={{width: "100%"}}
                 ListHeaderComponent={<View style={{borderBottomWidth: 1, borderBottomColor: '#CED0CE', alignItems: "center"}}><Text style={{fontWeight: "bold", color: "#0589D0"}}>ITEMS</Text><View style={{marginBottom: 10, flexDirection: "row"}}>
@@ -211,8 +212,8 @@ export default class IOUHistoryScreen extends React.Component {
                 rightElement={() => this.renderItemRight(item)}
                 />}
               />
-              </View>
-            </Card>
+              </Card>
+            
             
           </View>
         </ScrollView>
@@ -289,17 +290,11 @@ export default class IOUHistoryScreen extends React.Component {
       .then(res => {
         if (res.success){
           this.getHistory();
-          return Alert.alert(
-            'Friend Added',
-            'You are now friends with ' + this.state.other_user.name,
-            [
-              {
-                text: 'Okay',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+          return showMessage({
+            message: 'You are now friends with ' + this.state.other_user.name,
+            type: "default",
+            backgroundColor: "#01c853",
+          });
         }
       })
       .catch(error => {
@@ -371,17 +366,11 @@ export default class IOUHistoryScreen extends React.Component {
       .then(res => {
         if (res.success){
           this.getHistory();
-          return Alert.alert(
-            'IOU Concluded!',
-            'You successfully resolved an item with ' + this.state.other_user.name,
-            [
-              {
-                text: 'Okay',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+          return showMessage({
+            message: 'You successfully resolved an item with ' + this.state.other_user.name,
+            type: "default",
+            backgroundColor: "#01c853",
+          });
         }
       })
       .catch(error => {
@@ -401,17 +390,11 @@ export default class IOUHistoryScreen extends React.Component {
       .then(res => {
         if (res.success){
           this.getHistory();
-          return Alert.alert(
-            'IOU Concluded!',
-            'You successfully resolved all funds with ' + this.state.other_user.name + '!',
-            [
-              {
-                text: 'Okay',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+          return showMessage({
+            message: 'You successfully resolved all funds with ' + this.state.other_user.name + '!',
+            type: "default",
+            backgroundColor: "#01c853",
+          });
         }
       })
       .catch(error => {
@@ -444,7 +427,7 @@ const styles = StyleSheet.create({
       width: "60%",
       marginVertical: 15,
       backgroundColor: "#FF5733",
-      padding: 5,
+      padding: 20,
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 8 ,

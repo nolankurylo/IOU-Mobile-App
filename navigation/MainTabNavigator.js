@@ -9,7 +9,6 @@ import {
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
-import BudgetScreen from "../components/Budget";
 import ProfileScreen from "../screens/ProfileScreen";
 import NotificationsScreen from "../screens/NotificationsScreen"
 import AddHouseFriendsScreen from "../screens/AddHouseFriendsScreen"
@@ -25,7 +24,6 @@ import HouseSettingsScreen from "../screens/HouseSettingsScreen";
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-  Budget: BudgetScreen,
   CreateHouseName: CreateHouseNameScreen,
   AddHouseFriends: AddHouseFriendsScreen,
   House: HouseScreen,

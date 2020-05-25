@@ -5,7 +5,6 @@ import {
     View,
     StyleSheet,
     ScrollView,
-    Alert,
     TextInput,
     TouchableWithoutFeedback,
     Keyboard,
@@ -16,6 +15,7 @@ import {
   } from "react-native-elements";
 import CustomizedIcon from "./CustomizedIcon"
 import { API_ROUTE } from "react-native-dotenv";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default class AddNecessityModal extends React.Component {
   constructor(props) {
@@ -37,7 +37,7 @@ export default class AddNecessityModal extends React.Component {
   render() {
     return (
     <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, backgroundColor: "#3498db" }} contentContainerStyle={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ref={scrollView => this.scrollView = scrollView} keyboardShouldPersistTaps="handled">
+      <ScrollView style={{ flex: 1, backgroundColor: "#51B1D3" }} contentContainerStyle={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} ref={scrollView => this.scrollView = scrollView} keyboardShouldPersistTaps="handled">
             <Card  title="Explain the item you are adding">
                 <View style={{marginVertical: 5}}> 
                   <Text style={styles.text}>What is the item?</Text>
@@ -46,7 +46,7 @@ export default class AddNecessityModal extends React.Component {
                     <View style={{flex: 0.15, marginLeft:10}}>
                       <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => this.scroll(120)}>
                         <View>
-                          <CustomizedIcon name="md-arrow-round-forward" color="#3498db" size={40} />
+                          <CustomizedIcon name="md-arrow-round-forward" color="#51B1D3" size={40} />
                         </View> 
                       </TouchableWithoutFeedback> 
                     </View>
@@ -59,7 +59,7 @@ export default class AddNecessityModal extends React.Component {
                     <View style={{ flex: 0.15, marginLeft: 10 }}>
                       <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
                         <View>
-                          <CustomizedIcon name="md-arrow-round-forward" color="#3498db" size={40} />
+                          <CustomizedIcon name="md-arrow-round-forward" color="#51B1D3" size={40} />
                         </View>
                       </TouchableWithoutFeedback>
                     </View>
@@ -73,23 +73,17 @@ export default class AddNecessityModal extends React.Component {
                 </TouchableOpacity>
             </Card>
         </ScrollView>
+        <FlashMessage ref="modalFlash" floating={true} position="top" style={{alignItems: "center"}} textStyle={{fontWeight: 'bold'}} />   
       </KeyboardAvoidingView>
     );
   }
 
   addNewItem = () => {
     if (this.state.item == ""){
-        return Alert.alert(
-            'Wait!',
-            'Please insert an Item',
-            [
-              {
-                text: 'Okay',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+        return this.refs.modalFlash.showMessage({
+          message: "Please insert an item!",
+          type: "danger"
+        });
     }
     // Request API to insert this necessity item for this house
     url = API_ROUTE + '/insert_necessity'
@@ -100,18 +94,12 @@ export default class AddNecessityModal extends React.Component {
       })
       .then(response => response.json())
       .then(res => {
-        return Alert.alert(
-          'Yay!',
-          'Your item was added successfully!',
-          [
-            {
-              text: 'Okay',
-              style: 'cancel',
-              onPress: () => this.props.closeNecessityModal(false, true)
-            },
-          ],
-          {cancelable: false},
-        );
+        showMessage({
+          message: "Your item was added successfully!",
+          type: "default",
+          backgroundColor: "#01c853",
+        });
+        return this.props.closeNecessityModal(false, true)
       })
       .catch(error => console.log(error));
   }

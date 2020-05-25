@@ -179,7 +179,7 @@ export default class SearchScreen extends React.Component {
         <FlatList
           data={this.state.all_users}
           renderItem={({ item }) => <ListItem style={styles.user} title={item.name} 
-          leftElement={<CustomizedIcon name="md-person" color="#3498db"/>} rightElement={item.status ? 
+          leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>} rightElement={item.status ? 
           (item.status == "req" ? <TouchableOpacity onPress={() => this.cancelFriendRequest(item.id)} style={styles.requested}><Text>Requested</Text></TouchableOpacity> : <View style={styles.friend}><Text>Friends</Text></View>) : 
           <TouchableOpacity onPress={() => this.newFriendRequest(item.id)}style={styles.addFriend}><Text style={{color: "#FFF"}}>Add Friend</Text></TouchableOpacity>}/>}
           keyExtractor={(item, index) => index.toString()}

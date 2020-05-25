@@ -6,7 +6,6 @@ import {
     View,
     StyleSheet,
     ScrollView,
-    Alert
   } from "react-native";
   import {
     Card,
@@ -14,6 +13,7 @@ import {
   } from "react-native-elements";
 import CustomizedIcon from "./CustomizedIcon"
 import { API_ROUTE } from "react-native-dotenv";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default class AddFriendModal extends React.Component {
   constructor(props) {
@@ -27,7 +27,7 @@ export default class AddFriendModal extends React.Component {
     } 
   }
   
-  componentWillMount = () =>{
+  componentDidMount = () =>{
     // Request an array of friends to add to current house that are not already in the house
     url = API_ROUTE + `/get_new_possible_friends/${this.state.house_id}/${this.state.user}`;
     fetch(url, {
@@ -35,7 +35,7 @@ export default class AddFriendModal extends React.Component {
     })
     .then(response => response.json())
     .then(res => {
-        house = []
+        var house = []
         for (var i = 0; i < res.users.length; i++){
             house.push({id: res.users[i].id, name: res.users[i].username, add: false})
         }
@@ -68,7 +68,7 @@ export default class AddFriendModal extends React.Component {
   
   render() {
     return (
-      <View style={{ flex:1, backgroundColor:"#3498db", justifyContent: 'center'}} >
+      <View style={{ flex:1, backgroundColor:"#51B1D3", justifyContent: 'center'}} >
         <ScrollView contentInset={{ top: 0, bottom: 200 }} contentContainerStyle={{flexGrow:1, justifyContent: 'center'}}>
           <View style={{justifyContent: "center", alignItems: "center"}}>
             <CustomizedIcon name="ios-people" color="#FFF" size={100}/>
@@ -82,7 +82,7 @@ export default class AddFriendModal extends React.Component {
                 renderItem={({ item, index }) => <ListItem
                 style={styles.listItem}
                 title={item.name}
-                leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+                leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
                 rightElement={ 
                 <TouchableOpacity onPress={() => this.updateAdd(index)} style={{
                   borderWidth:2,
@@ -108,12 +108,13 @@ export default class AddFriendModal extends React.Component {
             <Text style={{color:"#FFFFFF", fontWeight: 'bold', fontSize: 18, textAlign: 'center'}}>Add Friends</Text>        
           </TouchableOpacity>
         </View>
+        <FlashMessage ref="modalFlash1" floating={true} position="top" style={{alignItems: "center"}} textStyle={{fontWeight: 'bold'}} />  
       </View>
     );
   }
 
   checkForm = () => {
-    users = []
+    var users = []
     // Push user ids into an array that are to be added to this house
     for (var i = 0; i < this.state.house.length; i++){
       if (this.state.house[i].add){
@@ -121,17 +122,10 @@ export default class AddFriendModal extends React.Component {
       }
     }
     if(users.length == 0){
-      return Alert.alert(
-        'Wait!',
-        'You must select at least one person',
-        [
-          {
-            text: 'Okay',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: false},
-      );
+      return this.refs.modalFlash1.showMessage({
+        message: "You must select at least one person!",
+        type: "danger"
+      });
     }
     // Request API to add the selected users to this house
     url = API_ROUTE + '/add_users_to_house'
@@ -143,18 +137,12 @@ export default class AddFriendModal extends React.Component {
     .then(response => response.json())
     .then(res => {
         if(res.success){
-            return Alert.alert(
-                'Yay!',
-                `Added ${users.length} new people to your house!`,
-                [
-                    {
-                        text: 'Okay',
-                        style: 'cancel',
-                        onPress: () => this.props.closeModal(false)
-                    },
-                ],
-                { cancelable: false },
-            ); 
+          showMessage({
+            message: `Added ${users.length} new people to your house!`,
+            type: "default",
+            backgroundColor: "#01c853",
+          });
+          return this.props.closeModal(false)
         }
     })
   }

@@ -119,6 +119,11 @@ export default class ProfileScreen extends React.Component {
       .then(response => response.json())
       .then(res => {
         this.getFriends();
+        showMessage({
+          message: `Removed friend!`,
+          type: "default",
+          backgroundColor: "#01c853",
+        });
       })
       .catch(error => {
         console.log(error)
@@ -159,17 +164,20 @@ export default class ProfileScreen extends React.Component {
 
   renderNotifications() {
     if(this.state.notifications){
-      return (<TouchableOpacity
-          style={styles.notifications}
-          onPress={() => this.props.navigation.navigate("Notifications", {
-            onGoBack: () => this.getFriends(),
-          })}        
-        >
-        <Text style={{color:'white', fontWeight: 'bold'}}>You Have New Friend Requests :)</Text>
-        <View style={{position: 'absolute', right: 10, margin:5, marginTop:10}}>
-        <CustomizedIcon name="md-arrow-round-forward" color="white"/>
-        </View>
-        </TouchableOpacity> 
+      return (
+        <View style={styles.bottomBtn}>
+          <TouchableOpacity
+              style={styles.notifications}
+              onPress={() => this.props.navigation.navigate("Notifications", {
+                onGoBack: () => this.getFriends(),
+              })}        
+            >
+            <Text style={{color:'white', fontWeight: 'bold'}}>You Have New Friend Requests :)</Text>
+            <View style={{position: 'absolute', right: 10, margin:5, marginTop:10}}>
+            <CustomizedIcon name="md-arrow-round-forward" color="white"/>
+            </View>
+            </TouchableOpacity>
+          </View> 
       )
     }
     else {
@@ -180,7 +188,7 @@ export default class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-          <SafeAreaView style={{flex: 1}}>
+          <ScrollView style={{flex: 1}} contentInset={{top:0, bottom: 100}}>
             {this.renderNotifications()}
             <Card title={`Logged in as: ${this.state.username}`}>
               <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
@@ -194,12 +202,12 @@ export default class ProfileScreen extends React.Component {
             </Card>
             <Card title="Your Friends:">
             <FlatList
-              contentInset={{top:0, bottom: 100}}
+              
               data={this.state.friends}
               renderItem={({ item }) => <ListItem
               style={styles.user}
               title={item.name}
-              leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+              leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
               rightElement={
                 <TouchableOpacity onPress={() => this.removeFriend(item.id)}>
                   <CustomizedIcon name="ios-trash" color="red"/>
@@ -210,7 +218,7 @@ export default class ProfileScreen extends React.Component {
               ItemSeparatorComponent={this.renderSeparator}
             />
             </Card>
-          </SafeAreaView>          
+          </ScrollView>          
         <TouchableOpacity style={styles.logoutBtn} onPress={() => this.logout()}><Text style={{color:"#FFFFFF", fontWeight: 'bold', fontSize: 22, textAlign: 'center'}}>Logout</Text></TouchableOpacity>
         {this.renderLoading()}
       </View>
@@ -221,7 +229,7 @@ export default class ProfileScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3498db"
+    backgroundColor: "#51B1D3"
   },
   subText: {
     fontSize: 20,
@@ -250,7 +258,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     padding: 15, 
-    backgroundColor:"red"
+    backgroundColor:"red",
+    alignItems: "stretch",
+    borderRadius: 10
   },
   logoutBtn: {
     position: 'absolute',
@@ -264,5 +274,13 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "stretch",
     borderRadius: 8
-  } 
+  },
+  bottomBtn: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginTop: 30,
+    marginHorizontal: 15,
+    marginBottom: 15,
+  
+  }
 });

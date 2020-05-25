@@ -17,6 +17,7 @@ import {
 import { API_ROUTE } from "react-native-dotenv";
 import AddNecessityModal from "../components/AddNecessityModal"
 import IOUModal from "../components/IOUModal"
+import { showMessage } from "react-native-flash-message";
 
 export default class NecessitiesScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -24,7 +25,7 @@ export default class NecessitiesScreen extends React.Component {
             headerLeft: <TouchableOpacity style={{ padding: 5, flexDirection: "row", }} onPress={() => {
                 navigation.goBack()
             }}>
-                <Text style={{ marginLeft: 10, fontSize: 20, fontWeight: 'bold', color: "#3498db" }}>Done</Text>
+                <Text style={{ marginLeft: 10, fontSize: 20, fontWeight: 'bold', color: "#51B1D3" }}>Done</Text>
             </TouchableOpacity>
         }
     };
@@ -47,7 +48,7 @@ export default class NecessitiesScreen extends React.Component {
           })
     }
     
-    componentWillMount = () => {
+    componentDidMount = () => {
         this.state.user = this.props.navigation.getParam('user');
         this.state.house_id = this.props.navigation.getParam('house_id');
         this.state.house = this.props.navigation.getParam('house');
@@ -80,7 +81,7 @@ export default class NecessitiesScreen extends React.Component {
         })
         .then(response => response.json())
         .then(res => {
-            necessities = []
+            var necessities = []
             for (var i = 0; i < res.necessities.length; i++) {
                 necessities.push({ id: res.necessities[i].id, item: res.necessities[i].item, description: res.necessities[i].description, added_by: res.necessities[i].username})
             }
@@ -92,7 +93,7 @@ export default class NecessitiesScreen extends React.Component {
 
     render() {
         return (
-            <View style={{flex: 1, backgroundColor:"#3498db"}}>
+            <View style={{flex: 1, backgroundColor:"#51B1D3"}}>
             <Modal
             animationType="slide"
             transparent={false}
@@ -177,17 +178,11 @@ export default class NecessitiesScreen extends React.Component {
             .then(res => {
                 if(res.success){
                     this.getNecessities()
-                    return Alert.alert(
-                        'Yay!',
-                        `${item.item} was resolved successfully!`,
-                        [
-                            {
-                                text: 'Okay',
-                                style: 'cancel'
-                            },
-                        ],
-                        { cancelable: false },
-                    ); 
+                    return showMessage({
+                        message: `${item.item} was resolved successfully!`,
+                        type: "default",
+                        backgroundColor: "#01c853",
+                    });
                 }
                 
             })

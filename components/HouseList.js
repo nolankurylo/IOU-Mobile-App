@@ -27,7 +27,7 @@ export default class HouseList extends React.Component {
               <Text style={styles.amount}>You Are Owed</Text>
               <Text style={styles.amount}>${amount} With {numItems} Item{s}</Text>
             </View>
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }
@@ -39,7 +39,7 @@ export default class HouseList extends React.Component {
             <Text style={styles.amount}>${amount}</Text>
             </View>
             
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }
@@ -52,7 +52,7 @@ export default class HouseList extends React.Component {
             <View style={{flex: 1, flexDirection: 'column'}}>
               <Text style={styles.amount}>{numItems} Item{s}</Text>
             </View>
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }
@@ -62,7 +62,7 @@ export default class HouseList extends React.Component {
             <View style={{flex: 1, flexDirection: 'column'}}>
               <Text style={styles.amount}>You Are Even</Text>
             </View>
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }
@@ -76,7 +76,7 @@ export default class HouseList extends React.Component {
               <Text style={styles.amount}>You Owe ${amount}</Text>
               <Text style={styles.amount}>With {numItems} Item{s}</Text>
             </View>
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }
@@ -87,7 +87,7 @@ export default class HouseList extends React.Component {
               <Text style={styles.amount}>You Owe</Text>
               <Text style={styles.amount}>${amount}</Text>
             </View>
-            <CustomizedIcon name="ios-arrow-forward" color="#3498db" size={40}/>
+            <CustomizedIcon name="ios-arrow-forward" color="#51B1D3" size={40}/>
           </View>
         )
       }

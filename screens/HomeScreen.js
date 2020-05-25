@@ -13,9 +13,7 @@ import {
 import TabBarIcon from "../components/TabBarIcon";
 import CustomizedIcon from "../components/CustomizedIcon"
 import { API_ROUTE } from "react-native-dotenv";
-import { ListItem } from "react-native-elements";
 import Loader from "../components/Loader";
-import TouchableScale from "react-native-touchable-scale"; 
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -23,10 +21,11 @@ export default class HomeScreen extends React.Component {
     headerTitle: <TabBarIcon name="ios-home" />,
     headerRight: <TouchableOpacity onPress={ () =>  navigation.getParam('createHouse')()} style={{marginRight: 15, flexDirection: 'row'}}>
       <Text style={{flexDirection: 'column', marginTop: 5, marginRight: 10, color: "#D0AE05"}}>Create House</Text>
-      <CustomizedIcon  name="ios-beer" color="#D0AE05" />
+      <CustomizedIcon  name="ios-create" color="#D0AE05" />
       </TouchableOpacity>
     }
   };
+
 
   constructor(props) {
     super(props);
@@ -77,7 +76,7 @@ export default class HomeScreen extends React.Component {
       return (
         <View >
           <View style={{ margin: 15 }}>
-            <Text style={styles.titleText}>Your IOU Houses:</Text>
+            <Text style={styles.titleText}>Uome Houses:</Text>
           </View>
         </View>
       );
@@ -127,23 +126,14 @@ export default class HomeScreen extends React.Component {
             }
             data={this.state.houses}
             renderItem={({ item }) => 
-              <ListItem
-                containerStyle={styles.listItem}
-                onPress={() => this.props.navigation.navigate("House", { house_id: item.id, house_name: item.name })}
-                Component={TouchableScale}
-                friction={90} //
-                tension={100} 
-                activeScale={0.95} 
-                linearGradientProps={{
-                  colors: ['#67FFE1', '#00CDFF'],
-                  start: [1, 0],
-                  end: [0.2, 0],
-                }}
-                title={item.name}
-                titleStyle={{ color: 'white', fontWeight: 'bold', textAlign: 'center', fontSize: 22 }}
-                chevronColor="white"
-                chevron
-              />}
+            <View style={styles.house}>
+              <TouchableOpacity  
+              onPress={() => this.props.navigation.navigate("House", { house_id: item.id, house_name: item.name })}>
+              <CustomizedIcon name="md-home" color="#484848" size={200} />
+              <Text style={{color: "#484848", fontWeight: "bold", textAlign: "center", fontSize:20, marginTop: -25}}>{item.name}</Text>
+            </TouchableOpacity>
+            </View>
+            }
             keyExtractor={(item, index) => index.toString()}
             
           />
@@ -183,12 +173,13 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#6C6C6C"
+    backgroundColor: "#51B1D3"
   },
   subContainer: {
     flex: 1,
-    borderRadius: 20,
-    backgroundColor: "#3498db",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    backgroundColor: "#DADADA",
     borderColor: "transparent"
   },
   subText: {
@@ -200,8 +191,9 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center"
+    color: "#858585",
+    textAlign: "center",
+    fontStyle: "italic"
   },
   btnText: {
     fontSize: 24,
@@ -213,7 +205,6 @@ const styles = StyleSheet.create({
     paddingTop: 50
   },
   listItem: {
-   
     margin: 20,
     borderWidth: 1,
     borderColor: "transparent",
@@ -227,5 +218,10 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     borderRadius: 8
+  },
+  house: {
+    alignItems: "center",
+    marginBottom:20,
+    marginTop: 20
   }
 });

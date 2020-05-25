@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#3498db",
+    backgroundColor: "#51B1D3",
   },
   textInputError: {
     alignSelf: "stretch",

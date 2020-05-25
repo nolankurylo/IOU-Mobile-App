@@ -6,7 +6,6 @@ import {
     View,
     StyleSheet,
     ScrollView,
-    Alert,
     TextInput,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
@@ -18,6 +17,7 @@ import {
   } from "react-native-elements";
 import CustomizedIcon from "./CustomizedIcon"
 import { API_ROUTE } from "react-native-dotenv";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 export default class IOUModal extends React.Component {
   constructor(props) {
@@ -35,9 +35,9 @@ export default class IOUModal extends React.Component {
     } 
   }
 
-  componentWillMount = () =>{
+  componentDidMount = () =>{
     // Initialize added list with every user in this house set to true
-    house = []
+    var house = []
     house.push({id: this.state.user, name: "You", add: true})
     for (var i = 0; i < this.props.house.length; i++){
       house.push({id: this.props.house[i].id, name: this.props.house[i].name, add: true})
@@ -79,7 +79,7 @@ export default class IOUModal extends React.Component {
                 <View style={{flex: 0.15, marginLeft:10}}>
                 <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => this.scroll(275)}>
                   <View>
-                    <CustomizedIcon name="md-arrow-round-forward" color="#3498db" size={40} />
+                    <CustomizedIcon name="md-arrow-round-forward" color="#51B1D3" size={40} />
                   </View> 
                 </TouchableWithoutFeedback> 
                 </View>
@@ -90,11 +90,12 @@ export default class IOUModal extends React.Component {
                 <View style={{ flex: 0.15, marginLeft: 10 }}>
                   <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
                     <View>
-                      <CustomizedIcon name="md-arrow-round-forward" color="#3498db" size={40} />
+                      <CustomizedIcon name="md-arrow-round-forward" color="#51B1D3" size={40} />
                     </View>
                   </TouchableWithoutFeedback> 
                 </View>
               </View>
+             
             </View>
           )
       }
@@ -107,11 +108,12 @@ export default class IOUModal extends React.Component {
                 <View style={{ flex: 0.15, marginLeft: 10 }}>
                   <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
                     <View>
-                      <CustomizedIcon name="md-arrow-round-forward" color="#3498db" size={40} />
+                      <CustomizedIcon name="md-arrow-round-forward" color="#51B1D3" size={40} />
                     </View>
                   </TouchableWithoutFeedback>
                 </View>
               </View>
+             
             </View>
         )
       }
@@ -124,7 +126,7 @@ export default class IOUModal extends React.Component {
       "name": this.state.house[index]["name"],
       "add": !this.state.house[index]["add"],
     }
-    numAdded = 0;
+    var numAdded = 0;
     for (var i = 0; i < house.length; i++){
       if(house[i].add){
         numAdded++
@@ -139,7 +141,7 @@ export default class IOUModal extends React.Component {
   
   render() {
     return (
-      <View style={{flex: 1, backgroundColor:"#3498db"}}>
+      <View style={{flex: 1, backgroundColor:"#51B1D3"}}>
           <KeyboardAvoidingView behavior='padding' style = {{ flex: 1 }}>
           <ScrollView contentInset={{ top: 0, bottom: 100 }} ref={scrollView => this.scrollView = scrollView} keyboardShouldPersistTaps="handled">
             <View style={{marginTop:25, marginBottom:5, marginHorizontal:5}}>
@@ -161,7 +163,7 @@ export default class IOUModal extends React.Component {
                       <CustomizedIcon name="md-checkmark" color={this.state.money ? "green" : "white"}/>
                       </TouchableOpacity>
                     </View>
-                    <CustomizedIcon name="md-contacts" color="#3498db" size={85}/>
+                    <CustomizedIcon name="md-contacts" color="#51B1D3" size={85}/>
                     <View style={{justifyContent: "center", alignItems: "center"}}>
                       <Text style={{fontSize:16, fontWeight: 'bold', marginBottom: 10}}>Item IOU</Text>
                       <TouchableOpacity onPress={() => this.setState({ object: !this.state.object, money: !this.state.money})} 
@@ -191,7 +193,7 @@ export default class IOUModal extends React.Component {
                   renderItem={({ item, index }) => <ListItem
                   style={styles.listItem}
                   title={this.renderTitle(item)}
-                  leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+                  leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
                   rightElement={ 
                   <TouchableOpacity onPress={() => this.updateAdd(index)} style={{
                     borderWidth:2,
@@ -220,14 +222,15 @@ export default class IOUModal extends React.Component {
               <Text style={{color:"#FFFFFF", fontWeight: 'bold', fontSize: 18, textAlign: 'center'}}>Create IOU</Text>        
             </TouchableOpacity>
           </View>
+           <FlashMessage ref="modalFlash" floating={true} position="top" style={{alignItems: "center"}} textStyle={{fontWeight: 'bold'}} /> 
       </View>
     );
   }
 
   checkForm = async () => {
     // Push users into an array that are to be included in this IOU
-    users = []
-    selfAdded = false
+    var users = []
+    var selfAdded = false
     for (var i = 0; i < this.state.house.length; i++){
       if (this.state.house[i].add){
         if(this.state.house[i].id == this.state.user){
@@ -239,32 +242,18 @@ export default class IOUModal extends React.Component {
       }
     }
     if(users.length == 0){
-      return Alert.alert(
-        'Wait!',
-        'You must select at least one person',
-        [
-          {
-            text: 'Okay',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: false},
-      );
+      return this.refs.modalFlash.showMessage({
+        message: "You must select at least one person!",
+        type: "danger"
+      });
     }
     else{
         if(this.state.money){
             if(this.state.amount == "" || this.state.description == "" || isNaN(parseFloat(this.state.amount))){
-                return Alert.alert(
-                    'Wait!',
-                    'Please fill out both fields',
-                    [
-                      {
-                        text: 'Okay',
-                        style: 'cancel',
-                      },
-                    ],
-                    {cancelable: false},
-                  );
+              return this.refs.modalFlash.showMessage({
+                message: "Please fill out both fields!",
+                type: "danger"
+              });
             }
           // Request API to add a new money IOU for this house with the selected users
           url = API_ROUTE + "/add_money_iou"
@@ -276,18 +265,13 @@ export default class IOUModal extends React.Component {
             .then(response => response.json())
             .then(res => {
               if(res.success){
-                return Alert.alert(
-                  'Yay!',
-                  'Your IOU has been created',
-                  [
-                    {
-                      text: 'Okay',
-                      style: 'cancel',
-                      onPress: () => this.props.closeModal(false, true)
-                    },
-                  ],
-                  { cancelable: false },
-                );
+                showMessage({
+                  message: "Your IOU has been created successfully!",
+                  type: "default",
+                  backgroundColor: "#01c853",
+                });
+                return this.props.closeModal(false, true)
+                
               }
             })
             .catch(error => console.log(error));
@@ -295,17 +279,10 @@ export default class IOUModal extends React.Component {
         // Otherwise this is an object/item IOU
         else{
             if(this.state.description == ""){
-                return Alert.alert(
-                    'Wait!',
-                    'Please fill out the field',
-                    [
-                      {
-                        text: 'Okay',
-                        style: 'cancel',
-                      },
-                    ],
-                    {cancelable: false},
-                  );
+                return this.refs.modalFlash.showMessage({
+                  message: "Please fill out both fields!",
+                  type: "danger"
+                });
             }
             else{
               // Request API to add the new object/item IOU for the selected users
@@ -317,18 +294,12 @@ export default class IOUModal extends React.Component {
               })
               .then(response => response.json())
               .then(res => {
-                return Alert.alert(
-                  'Yay!',
-                  'Your IOU has been created',
-                  [
-                    {
-                      text: 'Okay',
-                      style: 'cancel',
-                      onPress: () => this.props.closeModal(false, true)
-                    },
-                  ],
-                  {cancelable: false},
-                );
+                showMessage({
+                  message: "Your IOU has been created successfully!",
+                  type: "default",
+                  backgroundColor: "#01c853",
+                });
+                return this.props.closeModal(false, true)
               })
               .catch(error => console.log(error));
             }

@@ -7,17 +7,16 @@ import {
   View,
   FlatList,
   SafeAreaView,
-  Alert,
   RefreshControl
 } from "react-native";
 import { API_ROUTE } from "react-native-dotenv";
 import {
-  Card,
   ListItem,
   SearchBar
 } from "react-native-elements";
 import Loader from "../components/Loader"
 import CustomizedIcon from "../components/CustomizedIcon"
+import { showMessage } from "react-native-flash-message";
 
 export default class AddHouseFriendsScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -25,7 +24,7 @@ export default class AddHouseFriendsScreen extends React.Component {
     headerLeft: <TouchableOpacity
     style={{padding: 5, width: 100, flexDirection: "row"}}
     onPress={ () =>  navigation.navigate('Home')}>
-    <Text style={{ marginLeft:10, fontSize: 18, fontWeight:'bold', color: "#3498db"}}>Cancel</Text>
+    <Text style={{ marginLeft:10, fontSize: 18, fontWeight:'bold', color: "#51B1D3"}}>Cancel</Text>
     </TouchableOpacity>
     }
   };
@@ -149,7 +148,7 @@ export default class AddHouseFriendsScreen extends React.Component {
           renderItem={({ item, index }) => <ListItem
           style={styles.listItem}
           title={item.name}
-          leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+          leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
           rightElement={ 
             <TouchableOpacity onPress={() => this.updateAdd(index)} style={{
               borderWidth:2,
@@ -191,7 +190,7 @@ export default class AddHouseFriendsScreen extends React.Component {
 
   checkForm =  () => {
     // Add all users in the list that were checked to an array
-    addUsers = []
+    var addUsers = []
     addUsers.push(this.state.user)
     for (var i = 0; i < this.state.all_users.length; i++){
       if (this.state.all_users[i].add){
@@ -199,17 +198,11 @@ export default class AddHouseFriendsScreen extends React.Component {
       }
     }
     if(addUsers.length <= 1){
-      return Alert.alert(
-        'Wait!',
-        'You must select at least one person',
-        [
-          {
-            text: 'Okay',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: false},
-      );
+      return showMessage({
+        message: "You must select at least one person!",
+        type: "danger",
+
+      });
     }
     else{
       this.createNewHouse(addUsers)
@@ -237,7 +230,7 @@ export default class AddHouseFriendsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3498db"
+    backgroundColor: "#51B1D3"
   },
   listItem: {
     fontSize: 20,

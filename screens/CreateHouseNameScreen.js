@@ -7,14 +7,14 @@ import {
   View,
   TextInput,
   KeyboardAvoidingView,
-  AsyncStorage,
-  Alert
+  AsyncStorage
 } from "react-native";
 import { API_ROUTE } from "react-native-dotenv";
 import {
   Card
 } from "react-native-elements";
 import Loader from "../components/Loader"
+import { showMessage } from "react-native-flash-message";
 
 export default class CreateHouseNameScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -22,7 +22,7 @@ export default class CreateHouseNameScreen extends React.Component {
     headerLeft: <TouchableOpacity
     style={{padding: 5, width: 100, flexDirection: "row"}}
     onPress={() => {navigation.goBack()}}>
-    <Text style={{ marginLeft:10, fontSize: 18, fontWeight:'bold', color: "#3498db"}}>Cancel</Text>
+    <Text style={{ marginLeft:10, fontSize: 18, fontWeight:'bold', color: "#51B1D3"}}>Cancel</Text>
     </TouchableOpacity>
     }
   };
@@ -51,17 +51,10 @@ export default class CreateHouseNameScreen extends React.Component {
 
   submitHouseName = () => {
       if (this.state.name.length == 0){
-          return Alert.alert(
-          'Wait!',
-          'You must give a name for this house',
-          [
-            {
-              text: 'Okay',
-              style: 'cancel',
-            },
-          ],
-          {cancelable: false},
-        );
+        return showMessage({
+          message: "You must give a name for this house!",
+          type: "danger"
+        });
       }
       // Before proceeding, request API to check if this user is already apart of an active house with this name
       url = API_ROUTE + '/verify_house_name/' + this.state.name + '/' + this.state.user
@@ -78,17 +71,10 @@ export default class CreateHouseNameScreen extends React.Component {
           })
         }
         else{
-          return Alert.alert(
-            'Oops!',
-            'You have already have a house with this name',
-            [
-              {
-                text: 'Okay',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+          return showMessage({
+            message: "You have already have a house with this name!",
+            type: "danger"
+          });
         }
       })
       .catch(err => {
@@ -121,7 +107,7 @@ export default class CreateHouseNameScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3498db"
+    backgroundColor: "#51B1D3"
   },
   cardContainer: {
     alignItems: "stretch",

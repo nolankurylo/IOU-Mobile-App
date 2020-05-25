@@ -33,11 +33,11 @@ export default class HouseScreen extends React.Component {
     }
     return {
     gesturesEnabled: gesturesEnabled,
-      headerTitle: <Text style={{ fontSize: 20, fontWeight: 'bold', color: "#3498db"}}>{navigation.getParam("house_name")}</Text>,
+      headerTitle: <Text style={{ fontSize: 20, fontWeight: 'bold', color: "#51B1D3"}}>{navigation.getParam("house_name")}</Text>,
     headerLeft: <TouchableOpacity style={{padding: 5, width: 75, flexDirection: "row",}} onPress={() => {
         navigation.navigate("Home")}}>
-      <CustomizedIcon name="ios-arrow-back" color="#3498db"/>
-      <Text style={{ marginLeft:10, fontSize: 20, fontWeight:'bold', color: "#3498db"}}>Home</Text>
+      <CustomizedIcon name="ios-arrow-back" color="#51B1D3"/>
+      <Text style={{ marginLeft:10, fontSize: 20, fontWeight:'bold', color: "#51B1D3"}}>Home</Text>
       </TouchableOpacity>,
     headerRight: <TouchableOpacity
     style={{marginHorizontal: 20}}
@@ -125,7 +125,7 @@ export default class HouseScreen extends React.Component {
             <Text style={{width: 120, fontSize: 16, color: "#FFF"}}>House: <Text style={{color:"red", fontSize: 20, fontWeight: 'bold'}}>${this.state.you_owe}</Text></Text>
           </View>
         </View>
-        <View style={{backgroundColor: "#3498db"}}>
+        <View style={{backgroundColor: "#51B1D3"}}>
           <View style={{flexDirection: "row"}}>
             <TouchableOpacity style={styles.iouBtn} onPress={() => this.setState({ IOUModalVisible: true })}>
               <Text style={{color:"grey", fontWeight: 'bold', fontSize: 14, textAlign: 'center'}} >Create IOU</Text>        
@@ -142,17 +142,18 @@ export default class HouseScreen extends React.Component {
               refreshing={this.state.refreshing}
               onRefresh={this._onRefresh}
             />}
-        
+              
               data={this.state.house}
               renderItem={({ item }) => <TouchableOpacity onPress={() => this.props.navigation.navigate("IOUHistory", { user: this.state.user, other_user: item, house_id: this.state.house_id })} ><ListItem
               style={styles.listItem}
               title={<Text style={styles.left}>{item.name}</Text>}
-              leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+              leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
               rightElement={<HouseList numItems={item.items} amount={item.amount}/>}
               /></TouchableOpacity>}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={this.renderSeparator}
             />
+            
         {this.renderLoading()}
       </SafeAreaView>
     );
@@ -167,9 +168,10 @@ export default class HouseScreen extends React.Component {
     })
       .then(response => response.json())
       .then(res => {
+        
         var house = [];
-        you_get_back = 0;
-        you_owe = 0
+        var you_get_back = 0;
+        var you_owe = 0
         for (var i = 0; i < res.house.length; i++) {
           house.push({ id: res.house[i].other_user, name: res.house[i].username, add: true, amount: res.house[i].amount, items: res.house[i].items})
           if(res.house[i].amount >= 0){
@@ -179,13 +181,16 @@ export default class HouseScreen extends React.Component {
             you_owe += parseFloat(res.house[i].amount) * -1
           }
         }
+        this.props.navigation.setParams({house_name: res.house[0].name})
         this.setState({
           numNecessityItems: res.necessities.count,
           house: house,
+          house_name: res.house[0].name,
           loading: false,
           you_get_back: you_get_back.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
           you_owe: you_owe.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
         });
+        
       })
       .catch(err => this.setState({loading: false }));
   };
@@ -222,7 +227,7 @@ export default class HouseScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3498db"
+    backgroundColor: "#51B1D3"
   },
   listItem: {
     fontSize: 20,

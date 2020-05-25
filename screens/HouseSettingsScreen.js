@@ -11,6 +11,8 @@ import {
 import { API_ROUTE } from "react-native-dotenv";
 import CustomizedIcon from "../components/CustomizedIcon"
 import AddFriendModal from '../components/AddFriendModal'
+import ChangeHouseNameModal from "../components/ChangeHouseNameModal"
+import { showMessage } from "react-native-flash-message";
 
 export default class HouseSettingsScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
@@ -25,20 +27,28 @@ export default class HouseSettingsScreen extends React.Component {
             house: "",
             user: "",
             house_name: "",
-            modalVisible: false
+            addFriendModalVisible: false,
+            changeHouseNameModalVisible: false
+
         };
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
         this.state.user = this.props.navigation.getParam('user');
         this.state.house_id = this.props.navigation.getParam('house_id');
         this.state.house_name = this.props.navigation.getParam('house_name');
     }
 
-    closeModal = val => {
+    closeAddFriendModal = val => {
         this.setState({
-          modalVisible: val
+          addFriendModalVisible: val
         })
+      }
+
+      closeChangeHouseNameModal = val => {
+          this.setState({
+              changeHouseNameModalVisible: val
+          })
       }
    
     render() {
@@ -47,18 +57,35 @@ export default class HouseSettingsScreen extends React.Component {
                 <Modal
                     animationType="slide"
                     transparent={false}
-                    visible={this.state.modalVisible}
+                    visible={this.state.addFriendModalVisible}
                     onRequestClose={() => {
                         this.props.navigation.goBack()
                     }}>
-                    <AddFriendModal navigation={this.props.navigation} closeModal={this.closeModal} house_name={this.state.house_name} house={this.state.house} user={this.state.user} house_id={this.state.house_id}/>
+                    <AddFriendModal navigation={this.props.navigation} closeModal={this.closeAddFriendModal} house_name={this.state.house_name} house={this.state.house} user={this.state.user} house_id={this.state.house_id}/>
+                </Modal>
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.changeHouseNameModalVisible}
+                    onRequestClose={() => {
+                        this.props.navigation.goBack()
+                    }}>
+                    <ChangeHouseNameModal navigation={this.props.navigation} closeModal={this.closeChangeHouseNameModal} house_name={this.state.house_name} house={this.state.house} user={this.state.user} house_id={this.state.house_id}/>
                 </Modal>
                 <ScrollView contentInset={{ top: 0, bottom: 100, marginVertical:60 }}>
-                    <TouchableOpacity style={styles.btn} onPress={() => this.setState({ modalVisible: true })}>
+                    <TouchableOpacity style={styles.btn} onPress={() => this.setState({ addFriendModalVisible: true })}>
                         <View style={{flexDirection: "row", justifyContent:"space-between"}}>
                             <Text style={styles.btnText}>Add Friend To House</Text>
                             <View style={{alignItems: "flex-end"}}>
-                                <CustomizedIcon name="md-person-add" color="#3498db"/>
+                                <CustomizedIcon name="md-person-add" color="#51B1D3"/>
+                            </View>  
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.btn} onPress={() => this.setState({ changeHouseNameModalVisible: true })}>
+                        <View style={{flexDirection: "row", justifyContent:"space-between"}}>
+                            <Text style={styles.btnText}>Change House Name</Text>
+                            <View style={{alignItems: "flex-end"}}>
+                                <CustomizedIcon name="ios-home" color="#51B1D3"/>
                             </View>  
                         </View>
                     </TouchableOpacity>
@@ -98,17 +125,12 @@ export default class HouseSettingsScreen extends React.Component {
         .then(response => response.json())
         .then(res => {
             if(res.success){
-                return Alert.alert(
-                    "Deleted",
-                    "This house was deleted successfully",
-                    [
-                        {
-                            text: 'Okay',
-                            onPress: () => this.props.navigation.navigate("Home")
-                        }
-                    ],
-                    { cancelable: false }
-                );
+                showMessage({
+                    message: "House deleted successfully!",
+                    type: "default",
+                    backgroundColor: "#01c853",
+                });
+                return this.props.navigation.navigate("Home")
             } 
         })
         .catch(err => {

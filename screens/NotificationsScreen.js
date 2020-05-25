@@ -16,6 +16,7 @@ import {
 import { AsyncStorage } from "react-native";
 import Loader from "../components/Loader"
 import CustomizedIcon from "../components/CustomizedIcon"
+import { showMessage } from "react-native-flash-message";
 
 export default class NotificationsScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -25,8 +26,8 @@ export default class NotificationsScreen extends React.Component {
     onPress={() => {
       navigation.state.params.onGoBack()
       navigation.goBack()}}>
-    <CustomizedIcon name="ios-arrow-back" color="#3498db"/>
-    <Text style={{ marginLeft:10, fontSize: 20, fontWeight:'bold', color: "#3498db"}}>Back</Text>
+    <CustomizedIcon name="ios-arrow-back" color="#51B1D3"/>
+    <Text style={{ marginLeft:10, fontSize: 20, fontWeight:'bold', color: "#51B1D3"}}>Back</Text>
     </TouchableOpacity>
     }
   };
@@ -44,13 +45,16 @@ export default class NotificationsScreen extends React.Component {
     this.getFriendRequests();
     this.setState({ refreshing: false });
   };
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     var user = await AsyncStorage.getItem("user").then(function(id) {
       return id;
     });
     this.setState({ user: user, loading: true });
     this.getFriendRequests();
   };
+  componentWillUnmount() {
+    this.setState({ loading: false });
+  }
 
 
   getFriendRequests = () => {
@@ -93,6 +97,11 @@ export default class NotificationsScreen extends React.Component {
       .then(res => {
         if (res.success) {
           this.getFriendRequests()
+          return showMessage({
+            message: 'Friend request accepted!',
+            type: "default",
+            backgroundColor: "#01c853",
+          });
         }
       })
       .catch(error => {
@@ -116,6 +125,11 @@ export default class NotificationsScreen extends React.Component {
       .then(res => {
         if (res.success) {
           this.getFriendRequests()
+          return showMessage({
+            message: 'Friend request declined!',
+            type: "default",
+            backgroundColor: "#01c853",
+          });
         }
       })
       .catch(error => {
@@ -161,7 +175,7 @@ export default class NotificationsScreen extends React.Component {
           renderItem={({ item }) => <ListItem
           style={styles.listItem}
           title={item.name}
-          leftElement={<CustomizedIcon name="md-person" color="#3498db"/>}
+          leftElement={<CustomizedIcon name="md-person" color="#51B1D3"/>}
           rightElement={
             <View style={styles.subContainer}>
               <TouchableOpacity style={{padding: 10}} onPress={() => this.acceptFriendRequest(item.id)}>
@@ -186,7 +200,7 @@ export default class NotificationsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#3498db"
+    backgroundColor: "#51B1D3"
   },
   subText: {
     fontSize: 20,

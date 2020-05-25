@@ -14,6 +14,7 @@ export default class App extends React.Component {
   };
 
   render() {
+    console.disableYellowBox = true; // React Native has some ridiculous and poorly programmed warnings.
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
         <AppLoading
